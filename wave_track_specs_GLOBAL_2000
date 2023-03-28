@@ -1,0 +1,74 @@
+[c770m986@gasprdmod 850hPa]$ ncdump -h post_filter.2000.NH.NoTC.nc
+netcdf post_filter.2000.NH.NoTC {
+dimensions:
+        tracks = 278 ;
+        record = UNLIMITED ; // (9438 currently)
+variables:
+        int64 TRACK_ID(tracks) ;
+                TRACK_ID:add_fld_num = 0LL ;
+                TRACK_ID:tot_add_fld_num = 0LL ;
+                TRACK_ID:loc_flags = "" ;
+                TRACK_ID:cf_role = "trajectory_id" ;
+        int64 FIRST_PT(tracks) ;
+        int64 NUM_PTS(tracks) ;
+                NUM_PTS:long_name = "number of obs for this trajectory" ;
+                NUM_PTS:sample_dimension = "record" ;
+        int64 index(record) ;
+        double time(record) ;
+                time:standard_name = "time" ;
+                time:long_name = "Time" ;
+                time:units = "hours since 1979-12-01 00" ;
+                time:time_calendar = "gregorian" ;
+                time:start = "1979120100" ;
+                time:step = "3" ;
+        double longitude(record) ;
+                longitude:standard_name = "longitude" ;
+                longitude:long_name = "Longitude" ;
+                longitude:units = "degrees_east" ;
+        double latitude(record) ;
+                latitude:standard_name = "latitude" ;
+                latitude:long_name = "Latitude" ;
+                latitude:units = "degrees_north" ;
+        double curvature_vorticity(record) ;
+                curvature_vorticity:standard_name = "curvature_vorticity" ;
+                curvature_vorticity:long_name = "Relative Vorticity" ;
+                curvature_vorticity:units = "s**-1" ;
+                curvature_vorticity:scale_factor = 1.e-05 ;
+                curvature_vorticity:coordinates = "time latitude longitude TRACK_ID" ;
+        double max_int(tracks) ;
+                max_int:standard_name = "max intensity" ;
+                max_int:long_name = "Max Intensity" ;
+                max_int:units = "s**-1" ;
+                max_int:scale_factor = 1.e-05 ;
+        double max_lat(tracks) ;
+                max_lat:standard_name = "latitude" ;
+                max_lat:long_name = "Latitude" ;
+                max_lat:units = "degrees_north" ;
+        double max_lon(tracks) ;
+                max_lon:standard_name = "longitude" ;
+                max_lon:long_name = "Longitude" ;
+                max_lon:units = "degrees_east" ;
+        double net_dist_2d(tracks) ;
+                net_dist_2d:standard_name = "2d net travel" ;
+                net_dist_2d:long_name = "Net Travel Distance" ;
+                net_dist_2d:units = "km" ;
+        double all_dist_2d(record) ;
+                all_dist_2d:standard_name = "2d travel" ;
+                all_dist_2d:long_name = "2d travel between points" ;
+                all_dist_2d:units = "km" ;
+        double speed(record) ;
+                speed:standard_name = "speed" ;
+                speed:long_name = "wave propagation speed  over preceding timestep" ;
+                speed:units = "m s**-1" ;
+        double avg_spd(tracks) ;
+                avg_spd:standard_name = "avg speed" ;
+                avg_spd:long_name = "average wave propagation speed over preceding timestep" ;
+                avg_spd:units = "m s**-1" ;
+
+// global attributes:
+                :realm = "atmos" ;
+                :history = "testing" ;
+                :Conventions = "CF-1.7" ;
+                :featureType = "trajectory" ;
+                :comment = "Filtered tracks for 2000, with TCs removed. Filtered with version 5.1a, TCs removed with v2" ;
+}
