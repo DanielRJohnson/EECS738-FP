@@ -12,9 +12,9 @@ def add_deltas_and_time(data_df: pd.DataFrame) -> pd.DataFrame:
     """
     df = data_df.copy()
 
-    for feature in ["AirTemp", "QV", "Omega", "SeaLevPress", "UWinds", "VWinds", "Lat", "Lon"]:
+    for feature in list(df.columns)[:-1]:  # all columns but time
         df["d" + feature] = df[feature].diff()  # Add differential
-        df.loc[0, "d" + feature] = 0  # original differential is zero
+        df.at[0, "d" + feature] = 0  # original differential is zero
 
     df['Time'] = pd.to_datetime(df.Time, format="%Y%m%d%H")
     df = df.set_index('Time')  # make the index time
