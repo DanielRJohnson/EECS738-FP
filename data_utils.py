@@ -11,13 +11,24 @@ def add_deltas_and_time(data_df: pd.DataFrame) -> pd.DataFrame:
     with differentials added and a time index
     """
     df = data_df.copy()
+    
+    # Set index, remove duplicates, sort time
+    df['Time'] = pd.to_datetime(df.Time, format="%Y%m%d%H")
+    df = df.set_index('Time')
+    df = df[~df.index.duplicated(keep='first')]
+    df = df.sort_index()
 
-    for feature in list(df.columns)[:-1]:  # all columns but time
+    for feature in list(df.columns):
         df["d" + feature] = df[feature].diff()  # Add differential
         df.at[0, "d" + feature] = 0  # original differential is zero
-
-    df['Time'] = pd.to_datetime(df.Time, format="%Y%m%d%H")
-    df = df.set_index('Time')  # make the index time
+        
+    # Remove potential fragments
+    df = df.dropna()
+    
+    if "PtIndex" in df.columns:
+        df = df.drop(axis=1, labels=["dPtIndex"])
+    if "WaveTrajectory" in df.columns:
+        df = df.drop(axis=1, labels=["dWaveTrajectory"])
 
     return df
 
@@ -61,3 +72,31 @@ def column_combinations(columns: list[str], max_len: int) -> list[list[str]]:
     for i in range(1, max_len+1):
         combs.extend([list(comb) for comb in combinations(columns, i)])
     return combs
+
+def add_lifetime(data_df: pd.DataFrame, decimals:int = 1) -> pd.DataFrame:
+    if "PtIndex" in data_df.columns:
+        df = data_df.copy()
+        LifeTime = []
+        
+        Pts = []
+        LastPt = 0
+        PtCount = 0
+        for PtIndex in df.PtIndex:
+            if Pts and PtIndex < Pts[-1]:
+                if len(Pts) == 1:
+                    LifeTime = np.concatenate((LifeTime, np.array([1.0])))
+                else:
+                    LifeTime = np.concatenate((LifeTime, np.array(Pts)/(Pts[-1])))
+                PtCount = 1
+                Pts = []
+            else:
+                PtCount += 1
+            Pts = Pts + [PtIndex]
+        if Pts:
+            LifeTime = np.concatenate((LifeTime, np.array(Pts)/(Pts[-1])))
+        df["LifeTime"] = LifeTime
+        df.LifeTime = round(df.LifeTime, decimals)
+        
+        return df
+    else:
+        return([])
